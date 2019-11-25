@@ -1,3 +1,56 @@
 <resources>
+
     <string name="app_name">Json</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Bezpieczne Auto</string>
+    <string name="nav_header_subtitle">Wybierz zakładkę</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+
+    <string name="marka_pojazdu">Marka:</string>
+    <string name="model_pojazdu">Model:</string>
+    <string name="rok_produkcji_pojazdu">Rok produkcji:</string>
+    <string name="pojemnosc_silnika">Pojemność silnika:</string>
+    <string name="konie_mechaniczne">Konie mechaniczne:</string>
+
+    <string name="new_part">New part</string>
+    <string name="replacement_date">Replacement date</string>
+    <string name="part_price">Part price</string>
+    <string name="part_price_hint">np. 125</string>
+    <string name="additional_info">Additional info</string>
+
+    <string name="date_hint">%s</string>
+    <string name="wybierz_auto">Auto:</string>
+    <string name="nowa_czesc">Nowa część:</string>
+    <string name="cena_czesci">Cena części:</string>
+    <string name="data_wymiany">Data wymiany:</string>
+    <string name="additional_info_txt">Dodatkowe informacje:</string>
+
+    <string name="car_data_txt">Lista wymienianych części:</string>
+    <string name="car_specification">Specyfikacja auta:</string>
+    <string name="podaj_marke">Podaj markę:</string>
+    <string name="tutaj_wpisz_marke_swojego_auta">np. Seat</string>
+    <string name="podaj_model">Podaj model:</string>
+    <string name="tutaj_wpisz_model_twojego_auta">np. Ibiza III</string>
+    <string name="rok_produkcji">Rok produkcji:</string>
+    <string name="tutaj_wpisz_rok_produkcji_twojego_auta">np. 2001</string>
+    <string name="tutaj_wpisz_pojemnosc_silnika">np. 1.9 TDI</string>
+    <string name="moc_w_KM">Moc (KM):</string>
+    <string name="tutaj_wpisz_moc_silnika">np. 90KM</string>
+    <string name="ustaw_jako_glowne_auto">Ustaw jako główne</string>
+
+    <string name="menu_nav_home">Główne auto</string>
+    <string name="menu_nav_cars">Moje auta</string>
+    <string name="menu_nav_replacements">Moje wymiany</string>
+    <string name="menu_nav_share">Wyślij dane pojazdu</string>
+    <string name="menu_nav_dokumenty">Dokumenty</string>
+
+    <string name="share">Udostępnij</string>
+    <string name="insurance">Ubezpieczenia</string>
+    <string name="car_service">Przeglądy</string>
+    <string name="data_to_send_format">Marka: %s \nModel: %s \nRok produkcji: %s \nPojemność silnika: %s \nMoc: %sKM</string>
+    <string name="edit_button_txt">EDYTUJ</string>
+
 </resources>

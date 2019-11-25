@@ -32,13 +32,11 @@ public class Car {
 
     /**
      * No args constructor for use in serialization
-     *
      */
     public Car() {
     }
 
     /**
-     *
      * @param pojemnosc
      * @param moc
      * @param image

@@ -26,13 +26,11 @@ public class Part {
 
     /**
      * No args constructor for use in serialization
-     *
      */
     public Part() {
     }
 
     /**
-     *
      * @param date
      * @param partId
      * @param price

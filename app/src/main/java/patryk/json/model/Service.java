@@ -26,13 +26,11 @@ public class Service {
 
     /**
      * No args constructor for use in serialization
-     *
      */
     public Service() {
     }
 
     /**
-     *
      * @param registryNr
      * @param dateTo
      * @param serviceId

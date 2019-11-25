@@ -26,13 +26,11 @@ public class Insurance {
 
     /**
      * No args constructor for use in serialization
-     *
      */
     public Insurance() {
     }
 
     /**
-     *
      * @param additionalInfo
      * @param dateTo
      * @param insuranceId

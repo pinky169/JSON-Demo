@@ -1,10 +1,11 @@
 package patryk.json.model;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Vehicle {
+import java.util.List;
+
+public class DataSet {
 
     @SerializedName("cars")
     @Expose
@@ -21,19 +22,17 @@ public class Vehicle {
 
     /**
      * No args constructor for use in serialization
-     *
      */
-    public Vehicle() {
+    public DataSet() {
     }
 
     /**
-     *
      * @param insurance
      * @param cars
      * @param parts
      * @param services
      */
-    public Vehicle(List<Car> cars, List<Part> parts, List<Insurance> insurance, List<Service> services) {
+    public DataSet(List<Car> cars, List<Part> parts, List<Insurance> insurance, List<Service> services) {
         super();
         this.cars = cars;
         this.parts = parts;
