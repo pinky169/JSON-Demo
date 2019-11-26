@@ -1,10 +1,10 @@
 <resources>
 
-    <string name="app_name">Json</string>
+    <string name="app_name">JSON demo</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Bezpieczne Auto</string>
+    <string name="nav_header_title">JSON Demo</string>
     <string name="nav_header_subtitle">Wybierz zakładkę</string>
     <string name="nav_header_desc">Navigation header</string>
 
@@ -25,7 +25,6 @@
     <string name="wybierz_auto">Auto:</string>
     <string name="nowa_czesc">Nowa część:</string>
     <string name="cena_czesci">Cena części:</string>
-    <string name="data_wymiany">Data wymiany:</string>
     <string name="additional_info_txt">Dodatkowe informacje:</string>
 
     <string name="car_data_txt">Lista wymienianych części:</string>
@@ -52,5 +51,16 @@
     <string name="car_service">Przeglądy</string>
     <string name="data_to_send_format">Marka: %s \nModel: %s \nRok produkcji: %s \nPojemność silnika: %s \nMoc: %sKM</string>
     <string name="edit_button_txt">EDYTUJ</string>
+
+    <string name="data_wymiany">Data wymiany: %s</string>
+    <string name="cena">Cena: %szł</string>
+    <string name="numer_polisy">Numer polisy: %s</string>
+    <string name="ubezpieczyciel">Ubezpieczyciel: %s</string>
+    <string name="ważne_od">Ważne od: %s</string>
+    <string name="ważne_do">Ważne do: %s</string>
+    <string name="numer_rejestracyjny">Numer rejestracyjny: %s</string>
+    <string name="przebieg">Przebieg podczas badania: %s</string>
+    <string name="ważny_od">Ważny od: %s</string>
+    <string name="ważny_do">Ważny do: %s</string>
 
 </resources>

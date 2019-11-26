@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,11 +34,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemClickListener {
+public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
     private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private List<Part> parts;
     private API api;
 
@@ -59,9 +61,12 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
 
         View rootView = inflater.inflate(R.layout.recyclerview_layout, container, false);
 
-        recyclerView = rootView.findViewById(R.id.recyclerView);
         progressBar = rootView.findViewById(R.id.progressBar);
 
+        swipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
@@ -88,19 +93,16 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
                 recyclerView.setAdapter(adapter);
 
                 progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<List<Part>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    @Override
-    public void onItemClick(int position) {
-        Toast.makeText(getContext(), "Kliknieto pozycje: " + position, Toast.LENGTH_LONG).show();
     }
 
     // Dodawanie nowej części dla wybranego auta
@@ -217,5 +219,15 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
 
         final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
         alertDialog.show();
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Toast.makeText(getContext(), parts.get(position).getPartName(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRefresh() {
+        getParts();
     }
 }

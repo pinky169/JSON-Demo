@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
@@ -24,11 +25,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItemClickListener {
+public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
     private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private List<Service> services;
     private API api;
 
@@ -61,9 +63,12 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
 
         View rootView = inflater.inflate(R.layout.recyclerview_layout, container, false);
 
-        recyclerView = rootView.findViewById(R.id.recyclerView);
         progressBar = rootView.findViewById(R.id.progressBar);
 
+        swipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
@@ -91,11 +96,13 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
                 recyclerView.setAdapter(adapter);
 
                 progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<List<Service>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
@@ -103,6 +110,11 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(getContext(), "Kliknieto pozycje: " + position, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Auto: " + services.get(position).getRegistryNr(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRefresh() {
+        getServices();
     }
 }

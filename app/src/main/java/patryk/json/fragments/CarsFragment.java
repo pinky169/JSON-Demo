@@ -12,7 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import patryk.json.R;
@@ -24,21 +26,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClickListener {
+public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
     private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private List<Car> cars;
     private API api;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         APIClient apiClient = new APIClient();
         api = apiClient.getClient();
 
+        cars = new ArrayList<>();
         adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
 
         getCars();
@@ -50,9 +55,12 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
 
         View rootView = inflater.inflate(R.layout.recyclerview_layout, container, false);
 
-        recyclerView = rootView.findViewById(R.id.recyclerView);
         progressBar = rootView.findViewById(R.id.progressBar);
 
+        swipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
@@ -73,6 +81,34 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
                 }
 
                 cars = response.body();
+
+                adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
+                adapter.setOnItemClickListener(CarsFragment.this);
+                recyclerView.setAdapter(adapter);
+
+                progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(Call<List<Car>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+/*    private void addCar() {
+
+        Car car = new Car(5, "Smart", "Smart 5", "2001", "1.2", "55", "https://raw.githubusercontent.com/pinky169/Images/master/Seat-Ibiza.jpg", 0);
+        Call<Car> call = api.postcar(car);
+
+        call.enqueue(new Callback<Car>() {
+            @Override
+            public void onResponse(Call<Car> call, Response<Car> response) {
+
+                cars.add(response.body());
                 adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
                 adapter.setOnItemClickListener(CarsFragment.this);
                 recyclerView.setAdapter(adapter);
@@ -81,15 +117,20 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
             }
 
             @Override
-            public void onFailure(Call<List<Car>> call, Throwable t) {
+            public void onFailure(Call<Car> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-    }
+    }*/
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(getContext(), "Kliknięto pozycję: " + position, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), cars.get(position).getMarka() + " " + cars.get(position).getModel(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRefresh() {
+        getCars();
     }
 }

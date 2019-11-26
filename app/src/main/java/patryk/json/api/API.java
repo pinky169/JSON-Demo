@@ -8,14 +8,15 @@ import patryk.json.model.Insurance;
 import patryk.json.model.Part;
 import patryk.json.model.Service;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
-import retrofit2.http.Url;
 
 public interface API {
 
-    @GET
-    Call<List<DataSet>> getVehicles(@Url String url);
+    @GET("db")
+    Call<List<DataSet>> getDataSet();
 
     @GET("cars")
     Call<List<Car>> getCars();
@@ -31,4 +32,7 @@ public interface API {
 
     @GET("cars")
     Call<List<Car>> getMainCar(@Query("isMainCar") int isMainCar);
+
+    @POST("cars")
+    Call<Car> postCar(@Body Car car);
 }

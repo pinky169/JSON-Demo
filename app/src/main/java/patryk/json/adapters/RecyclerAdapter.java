@@ -22,7 +22,7 @@ import patryk.json.model.Service;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
 
-    public OnItemClickListener mListener;
+    private OnItemClickListener mListener;
     private Context context;
     private List<?> list;
     private int layoutRes;
@@ -63,26 +63,26 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
             holder.partName.setText(part.getPartName());
             holder.partAdditionalInfo.setText(part.getAdditionalInfo());
-            holder.partReplacementDate.setText(part.getDate());
-            holder.partPrice.setText(part.getPrice());
+            holder.partReplacementDate.setText(String.format(context.getString(R.string.data_wymiany), part.getDate()));
+            holder.partPrice.setText(String.format(context.getString(R.string.cena), part.getPrice()));
 
         } else if (object instanceof Insurance) {
 
             Insurance insurance = (Insurance) object;
 
-            holder.docInfo.setText(insurance.getPolicyNr());
-            holder.docAdditionalInfo.setText(insurance.getAdditionalInfo());
-            holder.docDateFrom.setText(insurance.getDateFrom());
-            holder.docDateTo.setText(insurance.getDateTo());
+            holder.docInfo.setText(String.format(context.getString(R.string.numer_polisy), insurance.getPolicyNr()));
+            holder.docAdditionalInfo.setText(String.format(context.getString(R.string.ubezpieczyciel), insurance.getAdditionalInfo()));
+            holder.docDateFrom.setText(String.format(context.getString(R.string.ważne_od), insurance.getDateFrom()));
+            holder.docDateTo.setText(String.format(context.getString(R.string.ważne_do), insurance.getDateTo()));
 
         } else if (object instanceof Service) {
 
             Service service = (Service) object;
 
-            holder.docInfo.setText(service.getRegistryNr());
-            holder.docAdditionalInfo.setText(service.getMileage());
-            holder.docDateFrom.setText(service.getDateFrom());
-            holder.docDateTo.setText(service.getDateTo());
+            holder.docInfo.setText(String.format(context.getString(R.string.numer_rejestracyjny), service.getRegistryNr()));
+            holder.docAdditionalInfo.setText(String.format(context.getString(R.string.przebieg), service.getMileage()));
+            holder.docDateFrom.setText(String.format(context.getString(R.string.ważny_od), service.getDateFrom()));
+            holder.docDateTo.setText(String.format(context.getString(R.string.ważny_do), service.getDateTo()));
 
         }
     }
@@ -102,10 +102,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         void onItemClick(int position);
     }
 
-    public class RecyclerViewHolder extends RecyclerView.ViewHolder {
+    class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView image;
-        //private MaterialButton button;
         private TextView
                 marka,
                 model,
@@ -121,7 +120,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 docDateFrom,
                 docDateTo;
 
-        public RecyclerViewHolder(@NonNull View itemView) {
+        RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
 
             image = itemView.findViewById(R.id.car_image);
