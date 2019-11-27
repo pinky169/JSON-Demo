@@ -17,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import patryk.json.R;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
@@ -38,7 +39,6 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         APIClient apiClient = new APIClient();
         api = apiClient.getClient();
@@ -68,6 +68,12 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        progressBar.setVisibility(View.GONE);
+    }
+
     private void getCars() {
 
         Call<List<Car>> call = api.getCars();
@@ -75,8 +81,9 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
         call.enqueue(new Callback<List<Car>>() {
             @Override
             public void onResponse(Call<List<Car>> call, Response<List<Car>> response) {
+
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getContext(), response.code(), Toast.LENGTH_LONG).show();
+                    Toasty.error(getContext(), response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -94,7 +101,7 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
             public void onFailure(Call<List<Car>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -119,14 +126,16 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
             @Override
             public void onFailure(Call<Car> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }*/
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(getContext(), cars.get(position).getMarka() + " " + cars.get(position).getModel(), Toast.LENGTH_LONG).show();
+        PartsFragment partsFragment = PartsFragment.newInstance(position);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, partsFragment).addToBackStack(null).commit();
+        Toasty.normal(getContext(), cars.get(position).getMarka() + " " + cars.get(position).getModel(), Toast.LENGTH_LONG).show();
     }
 
     @Override

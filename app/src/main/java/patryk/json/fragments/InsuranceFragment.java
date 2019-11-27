@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import patryk.json.R;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
@@ -85,7 +86,7 @@ public class InsuranceFragment extends Fragment implements RecyclerAdapter.OnIte
             public void onResponse(Call<List<Insurance>> call, Response<List<Insurance>> response) {
 
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getContext(), "Code: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toasty.error(getContext(), "Code: " + response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -103,14 +104,14 @@ public class InsuranceFragment extends Fragment implements RecyclerAdapter.OnIte
             public void onFailure(Call<List<Insurance>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(getContext(), "Polisa: " + insurances.get(position).getPolicyNr(), Toast.LENGTH_LONG).show();
+        Toasty.info(getContext(), "Polisa: " + insurances.get(position).getPolicyNr(), Toast.LENGTH_LONG).show();
     }
 
     @Override

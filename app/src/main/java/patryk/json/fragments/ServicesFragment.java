@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import patryk.json.R;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
@@ -85,7 +86,7 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
             public void onResponse(Call<List<Service>> call, Response<List<Service>> response) {
 
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getContext(), "Code: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toasty.error(getContext(), "Code: " + response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -103,14 +104,14 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
             public void onFailure(Call<List<Service>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(getContext(), "Auto: " + services.get(position).getRegistryNr(), Toast.LENGTH_LONG).show();
+        Toasty.info(getContext(), "Auto: " + services.get(position).getRegistryNr(), Toast.LENGTH_LONG).show();
     }
 
     @Override

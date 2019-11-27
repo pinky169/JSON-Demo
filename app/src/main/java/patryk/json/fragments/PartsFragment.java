@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import es.dmoral.toasty.Toasty;
 import patryk.json.R;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
@@ -36,12 +37,25 @@ import retrofit2.Response;
 
 public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
+    private static final String ARG_NUMBER = "position";
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<Part> parts;
     private API api;
+    private int clickedItemPosition;
+
+    public static PartsFragment newInstance(int position) {
+
+        PartsFragment f = new PartsFragment();
+        Bundle b = new Bundle();
+        b.putInt(ARG_NUMBER, position);
+
+        f.setArguments(b);
+
+        return f;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,7 +66,12 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
 
         adapter = new RecyclerAdapter(getContext(), parts, R.layout.item_part);
 
-        getParts();
+        if (getArguments() != null) {
+            clickedItemPosition = getArguments().getInt("position") + 1;
+            getCarParts(clickedItemPosition);
+        } else {
+            getParts();
+        }
     }
 
     @Nullable
@@ -83,7 +102,7 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
             public void onResponse(Call<List<Part>> call, Response<List<Part>> response) {
 
                 if (!response.isSuccessful()) {
-                    Toast.makeText(getContext(), response.code(), Toast.LENGTH_LONG).show();
+                    Toasty.error(getContext(), response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -100,7 +119,38 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
             public void onFailure(Call<List<Part>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getCarParts(int id) {
+
+        Call<List<Part>> call = api.getCarParts(id);
+
+        call.enqueue(new Callback<List<Part>>() {
+            @Override
+            public void onResponse(Call<List<Part>> call, Response<List<Part>> response) {
+
+                if (!response.isSuccessful()) {
+                    Toasty.error(getContext(), response.code(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                parts = response.body();
+                adapter = new RecyclerAdapter(getContext(), parts, R.layout.item_part);
+                adapter.setOnItemClickListener(PartsFragment.this);
+                recyclerView.setAdapter(adapter);
+
+                progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(Call<List<Part>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);
+                Toasty.error(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -158,7 +208,7 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
                                 TextUtils.isEmpty(partReplacementDate.getText().toString()) ||
                                 TextUtils.isEmpty(partPrice.getText().toString())) {
 //                                chooseCarSpinner.getSelectedItem() == null) {
-                            Toast.makeText(getContext(), "Musisz wypełnić każde pole oraz wybrać auto!", Toast.LENGTH_SHORT).show();
+                            Toasty.warning(getContext(), "Musisz wypełnić każde pole oraz wybrać auto!", Toast.LENGTH_SHORT).show();
                         } else {
                         }
                     }
@@ -198,7 +248,7 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
                                 TextUtils.isEmpty(partAdditionalInfo.getText().toString()) ||
                                 TextUtils.isEmpty(partReplacementDate.getText().toString()) ||
                                 TextUtils.isEmpty(partPrice.getText().toString())) {
-                            Toast.makeText(getContext(), "Musisz wypełnić każde pole!", Toast.LENGTH_SHORT).show();
+                            Toasty.warning(getContext(), "Musisz wypełnić każde pole!", Toast.LENGTH_SHORT).show();
                         } else {
                         }
                     }
@@ -223,7 +273,7 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(getContext(), parts.get(position).getPartName(), Toast.LENGTH_LONG).show();
+        Toasty.info(getContext(), parts.get(position).getPartName(), Toast.LENGTH_LONG).show();
     }
 
     @Override

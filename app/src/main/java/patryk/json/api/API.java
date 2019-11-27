@@ -24,6 +24,9 @@ public interface API {
     @GET("parts")
     Call<List<Part>> getParts();
 
+    @GET("parts")
+    Call<List<Part>> getCarParts(@Query("carId") int carId);
+
     @GET("insurance")
     Call<List<Insurance>> getInsurance();
 

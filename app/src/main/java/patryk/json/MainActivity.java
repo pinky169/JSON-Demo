@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+
     private void shareData() {
 
         Call<List<Car>> call = api.getMainCar(1);
