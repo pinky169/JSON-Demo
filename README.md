@@ -11,4 +11,5 @@ App uses Retrofit to fetch data from JSON source and displays it to the user.
 - Fragments
 - ViewPager
 - TabLayout
+- Intent.ACTION_SEND
 - Anything I forgot about :)
