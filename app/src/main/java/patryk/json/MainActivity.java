@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -34,6 +36,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private API api;
+    public ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        progressBar = findViewById(R.id.progressBar);
 
         DrawerLayout drawer = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -58,8 +63,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showDialog();
         }
 
-        // Wystartuj aplikację na fragmencie z danymi pojazdu
-        // If zapobiega ponownemu ładowaniu fragmentu przy zmianie orientacji ekranu
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CarsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_car_list);
@@ -84,9 +87,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_car_list) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CarsFragment()).commit();
         } else if (id == R.id.nav_replacements) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PartsFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PartsFragment()).addToBackStack(null).commit();
         } else if (id == R.id.nav_documents) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DocumentsFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DocumentsFragment()).addToBackStack(null).commit();
         } else if (id == R.id.nav_share) {
             shareData();
         }
@@ -96,6 +99,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    public void showProgress() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgress() {
+        progressBar.setVisibility(View.GONE);
+    }
 
     private void shareData() {
 
@@ -157,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Połącz się z WIFI lub zamknij aplikację...")
+        builder.setMessage("Połącz się z WIFI lub zamknij aplikację")
                 .setCancelable(false)
                 .setPositiveButton("Ustawienia WIFI", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -167,6 +177,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setNegativeButton("Zakończ", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
+                    }
+                })
+                .setNeutralButton("Anuluj", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
                     }
                 });
         AlertDialog alert = builder.create();

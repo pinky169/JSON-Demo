@@ -1,10 +1,10 @@
 package patryk.json.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.io.Serializable;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
+import patryk.json.MainActivity;
 import patryk.json.R;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
@@ -30,7 +32,7 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
 
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
-    private ProgressBar progressBar;
+    private MainActivity activity;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<Service> services;
     private API api;
@@ -47,15 +49,26 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        activity = (MainActivity) context;
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         APIClient apiClient = new APIClient();
         api = apiClient.getClient();
 
-        adapter = new RecyclerAdapter(getContext(), services, R.layout.item_document);
+        if (savedInstanceState != null) {
+            services = (List<Service>) savedInstanceState.getSerializable("services");
+        } else {
+            getServices();
+        }
 
-        getServices();
+        adapter = new RecyclerAdapter(getContext(), services, R.layout.item_document);
+        adapter.setOnItemClickListener(ServicesFragment.this);
     }
 
     @Nullable
@@ -63,8 +76,6 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.recyclerview_layout, container, false);
-
-        progressBar = rootView.findViewById(R.id.progressBar);
 
         swipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -77,7 +88,15 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("services", (Serializable) services);
+    }
+
     private void getServices() {
+
+        activity.showProgress();
 
         Call<List<Service>> call = api.getServices();
 
@@ -86,7 +105,7 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
             public void onResponse(Call<List<Service>> call, Response<List<Service>> response) {
 
                 if (!response.isSuccessful()) {
-                    Toasty.error(getContext(), "Code: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toasty.error(getContext(), response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -96,22 +115,22 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
                 adapter.setOnItemClickListener(ServicesFragment.this);
                 recyclerView.setAdapter(adapter);
 
-                progressBar.setVisibility(View.GONE);
+                activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<List<Service>> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
+                activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
-                Toasty.error(getContext(), "Code: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @Override
     public void onItemClick(int position) {
-        Toasty.info(getContext(), "Auto: " + services.get(position).getRegistryNr(), Toast.LENGTH_LONG).show();
+        Toasty.normal(getContext(), "Przegląd auta: " + services.get(position).getRegistryNr(), Toast.LENGTH_LONG).show();
     }
 
     @Override

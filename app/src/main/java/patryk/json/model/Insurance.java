@@ -3,7 +3,9 @@ package patryk.json.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Insurance {
+import java.io.Serializable;
+
+public class Insurance implements Serializable {
 
     @SerializedName("carId")
     @Expose
@@ -31,12 +33,12 @@ public class Insurance {
     }
 
     /**
-     * @param additionalInfo
-     * @param dateTo
-     * @param insuranceId
-     * @param dateFrom
-     * @param carId
-     * @param policyNr
+     * @param additionalInfo dodatkowe informacje
+     * @param dateTo         data waznosci ubezpieczenia
+     * @param insuranceId    id ubezpieczenia
+     * @param dateFrom       od kiedy obowiazuje ubezpieczenie
+     * @param carId          id auta do ktorego nalezy ubezpieczenie
+     * @param policyNr       numer polisy ubezpieczeniowej
      */
     public Insurance(int carId, int insuranceId, String policyNr, String additionalInfo, String dateFrom, String dateTo) {
         super();

@@ -3,7 +3,9 @@ package patryk.json.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Service {
+import java.io.Serializable;
+
+public class Service implements Serializable {
 
     @SerializedName("carId")
     @Expose
@@ -31,12 +33,12 @@ public class Service {
     }
 
     /**
-     * @param registryNr
-     * @param dateTo
-     * @param serviceId
-     * @param dateFrom
-     * @param carId
-     * @param mileage
+     * @param registryNr numer rejestracyjny auta
+     * @param dateTo     data waznosci przegladu
+     * @param serviceId  id przegladu
+     * @param dateFrom   data wykonania przegladu technicznego
+     * @param carId      id auta dla danego przegladu
+     * @param mileage    przebieg podczas badania technicznego
      */
     public Service(int carId, int serviceId, String registryNr, String mileage, String dateFrom, String dateTo) {
         super();

@@ -1,10 +1,10 @@
 package patryk.json.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,10 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
+import patryk.json.MainActivity;
 import patryk.json.R;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
@@ -31,10 +32,16 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
 
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
-    private ProgressBar progressBar;
+    private MainActivity activity;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<Car> cars;
     private API api;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        activity = (MainActivity) context;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,10 +50,14 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
         APIClient apiClient = new APIClient();
         api = apiClient.getClient();
 
-        cars = new ArrayList<>();
-        adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
+        if (savedInstanceState != null) {
+            cars = (List<Car>) savedInstanceState.getSerializable("cars");
+        } else {
+            getCars();
+        }
 
-        getCars();
+        adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
+        adapter.setOnItemClickListener(CarsFragment.this);
     }
 
     @Nullable
@@ -54,8 +65,6 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.recyclerview_layout, container, false);
-
-        progressBar = rootView.findViewById(R.id.progressBar);
 
         swipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -69,12 +78,14 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        progressBar.setVisibility(View.GONE);
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("cars", (Serializable) cars);
     }
 
     private void getCars() {
+
+        activity.showProgress();
 
         Call<List<Car>> call = api.getCars();
 
@@ -88,54 +99,36 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
                 }
 
                 cars = response.body();
-
+                
                 adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
                 adapter.setOnItemClickListener(CarsFragment.this);
                 recyclerView.setAdapter(adapter);
 
-                progressBar.setVisibility(View.GONE);
+                activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<List<Car>> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
+                activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
                 Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-/*    private void addCar() {
-
-        Car car = new Car(5, "Smart", "Smart 5", "2001", "1.2", "55", "https://raw.githubusercontent.com/pinky169/Images/master/Seat-Ibiza.jpg", 0);
-        Call<Car> call = api.postcar(car);
-
-        call.enqueue(new Callback<Car>() {
-            @Override
-            public void onResponse(Call<Car> call, Response<Car> response) {
-
-                cars.add(response.body());
-                adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
-                adapter.setOnItemClickListener(CarsFragment.this);
-                recyclerView.setAdapter(adapter);
-
-                progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onFailure(Call<Car> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }*/
-
     @Override
     public void onItemClick(int position) {
         PartsFragment partsFragment = PartsFragment.newInstance(position);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, partsFragment).addToBackStack(null).commit();
-        Toasty.normal(getContext(), cars.get(position).getMarka() + " " + cars.get(position).getModel(), Toast.LENGTH_LONG).show();
+        Toasty.custom(getContext(),
+                cars.get(position).getMarka() + " " + cars.get(position).getModel(),
+                R.drawable.ic_car,
+                R.color.colorAccent,
+                Toast.LENGTH_LONG,
+                true,
+                true)
+                .show();
     }
 
     @Override

@@ -3,7 +3,9 @@ package patryk.json.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Car {
+import java.io.Serializable;
+
+public class Car implements Serializable {
 
     @SerializedName("id")
     @Expose
@@ -37,14 +39,14 @@ public class Car {
     }
 
     /**
-     * @param pojemnosc
-     * @param moc
-     * @param image
-     * @param isMainCar
-     * @param marka
-     * @param model
-     * @param id
-     * @param rokProdukcji
+     * @param pojemnosc    pojemnosc auta
+     * @param moc          moc auta
+     * @param image        zdjecie auta
+     * @param isMainCar    czy jest glownym autem
+     * @param marka        marka auta
+     * @param model        model auta
+     * @param id           id auta
+     * @param rokProdukcji rok produkcji auta
      */
     public Car(int id, String marka, String model, String rokProdukcji, String pojemnosc, String moc, String image, int isMainCar) {
         super();

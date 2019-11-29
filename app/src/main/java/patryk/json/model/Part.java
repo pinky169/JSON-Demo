@@ -3,7 +3,9 @@ package patryk.json.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Part {
+import java.io.Serializable;
+
+public class Part implements Serializable {
 
     @SerializedName("carId")
     @Expose
@@ -31,12 +33,12 @@ public class Part {
     }
 
     /**
-     * @param date
-     * @param partId
-     * @param price
-     * @param additionalInfo
-     * @param partName
-     * @param carId
+     * @param date           data wymiany
+     * @param partId         id czesci
+     * @param price          cena czesci
+     * @param additionalInfo dodatkowe informacje
+     * @param partName       nazwa wymienionej czesci
+     * @param carId          id auta w ktorym byla wymieniona dana czesc
      */
     public Part(int carId, int partId, String partName, String additionalInfo, String date, String price) {
         super();
