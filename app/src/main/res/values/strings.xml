@@ -62,5 +62,7 @@
     <string name="przebieg">Przebieg podczas badania: %s</string>
     <string name="ważny_od">Ważny od: %s</string>
     <string name="ważny_do">Ważny do: %s</string>
+    <string name="action_search_title">Wyszukaj</string>
+    <string name="action_search_hint">np. Marka, model, rok produkcji</string>
 
 </resources>

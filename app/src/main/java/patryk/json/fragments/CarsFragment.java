@@ -3,23 +3,31 @@ package patryk.json.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
-import patryk.json.MainActivity;
 import patryk.json.R;
+import patryk.json.activity.MainActivity;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
 import patryk.json.api.APIClient;
@@ -28,13 +36,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, SearchView.OnQueryTextListener {
 
-    private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
     private MainActivity activity;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<Car> cars;
+    private List<Car> filteredList;
     private API api;
 
     @Override
@@ -46,13 +54,16 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         APIClient apiClient = new APIClient();
         api = apiClient.getClient();
 
         if (savedInstanceState != null) {
             cars = (List<Car>) savedInstanceState.getSerializable("cars");
+            filteredList = (List<Car>) savedInstanceState.getSerializable("filteredList");
         } else {
+            cars = new ArrayList<>();
             getCars();
         }
 
@@ -71,7 +82,7 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
 
         // Number of columns depends on the screen orientation -> dimens.xml
         final int columns = getResources().getInteger(R.integer.recyclerview_columns);
-        recyclerView = rootView.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), columns));
         recyclerView.setAdapter(adapter);
@@ -83,6 +94,7 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("cars", (Serializable) cars);
+        outState.putSerializable("filteredList", (Serializable) filteredList);
     }
 
     private void getCars() {
@@ -93,7 +105,7 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
 
         call.enqueue(new Callback<List<Car>>() {
             @Override
-            public void onResponse(Call<List<Car>> call, Response<List<Car>> response) {
+            public void onResponse(@NonNull Call<List<Car>> call, @NonNull Response<List<Car>> response) {
 
                 if (!response.isSuccessful()) {
                     Toasty.error(getContext(), response.code(), Toast.LENGTH_LONG).show();
@@ -101,17 +113,15 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
                 }
 
                 cars = response.body();
-                
-                adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
-                adapter.setOnItemClickListener(CarsFragment.this);
-                recyclerView.setAdapter(adapter);
+                filteredList = new ArrayList<>(cars);
+                adapter.updateList(cars);
 
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
-            public void onFailure(Call<List<Car>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Car>> call, @NonNull Throwable t) {
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
                 Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
@@ -121,10 +131,19 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
 
     @Override
     public void onItemClick(int position) {
-        PartsFragment partsFragment = PartsFragment.newInstance(position);
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, partsFragment).addToBackStack(null).commit();
+
+        // This handles situation when you filtered recyclerview and then clicked item
+        int id = cars.indexOf(filteredList.get(position));
+
+        // Open fragment with parts for selected car
+        PartsFragment partsFragment = PartsFragment.newInstance(id);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.addToBackStack(null);
+        transaction.add(R.id.fragment_container, partsFragment, "PartsDetailsFragment").commit();
+
         Toasty.custom(getContext(),
-                cars.get(position).getMarka() + " " + cars.get(position).getModel(),
+                cars.get(id).getMarka() + " " + cars.get(id).getModel(),
                 R.drawable.ic_car,
                 R.color.colorAccent,
                 Toast.LENGTH_LONG,
@@ -136,5 +155,51 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     @Override
     public void onRefresh() {
         getCars();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setQueryHint(getString(R.string.action_search_hint));
+        searchView.setOnQueryTextListener(this);
+    }
+
+    private void filter(String newText) {
+
+        filteredList = new ArrayList<>();
+
+        if (newText == null || newText.length() == 0) {
+            filteredList.addAll(cars);
+        } else {
+
+            String pattern = newText.toLowerCase().trim();
+
+            for (Car car : cars) {
+                if (car.getMarka().toLowerCase().contains(pattern) ||
+                        car.getModel().toLowerCase().contains(pattern) ||
+                        car.getRokProdukcji().contains(pattern) ||
+                        car.getMoc().contains(pattern) ||
+                        car.getPojemnosc().contains(pattern)) {
+                    filteredList.add(car);
+                }
+            }
+        }
+
+        adapter.updateList(filteredList);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        filter(newText);
+        return true;
     }
 }

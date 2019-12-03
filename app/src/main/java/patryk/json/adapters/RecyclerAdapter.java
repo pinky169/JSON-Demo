@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,10 +26,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
     private OnItemClickListener mListener;
     private Context context;
-    private List<?> list;
+    private List list;
     private int layoutRes;
 
-    public RecyclerAdapter(Context context, List<?> list, int layoutRes) {
+    // Allows to remember the last item shown on screen
+    private int lastPosition = -1;
+
+    public RecyclerAdapter(Context context, List list, int layoutRes) {
         this.context = context;
         this.list = list;
         this.layoutRes = layoutRes;
@@ -43,11 +48,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
 
-        Object object = list.get(position);
+        Object item = getItem(position);
 
-        if (object instanceof Car) {
+        if (item instanceof Car) {
 
-            Car car = (Car) object;
+            Car car = (Car) item;
 
             holder.marka.setText(car.getMarka());
             holder.model.setText(car.getModel());
@@ -57,27 +62,27 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
             Glide.with(context).load(car.getImage()).fitCenter().into(holder.image);
 
-        } else if (object instanceof Part) {
+        } else if (item instanceof Part) {
 
-            Part part = (Part) object;
+            Part part = (Part) item;
 
             holder.partName.setText(part.getPartName());
             holder.partAdditionalInfo.setText(part.getAdditionalInfo());
             holder.partReplacementDate.setText(String.format(context.getString(R.string.data_wymiany), part.getDate()));
             holder.partPrice.setText(String.format(context.getString(R.string.cena), part.getPrice()));
 
-        } else if (object instanceof Insurance) {
+        } else if (item instanceof Insurance) {
 
-            Insurance insurance = (Insurance) object;
+            Insurance insurance = (Insurance) item;
 
             holder.docInfo.setText(String.format(context.getString(R.string.numer_polisy), insurance.getPolicyNr()));
             holder.docAdditionalInfo.setText(String.format(context.getString(R.string.ubezpieczyciel), insurance.getAdditionalInfo()));
             holder.docDateFrom.setText(String.format(context.getString(R.string.ważne_od), insurance.getDateFrom()));
             holder.docDateTo.setText(String.format(context.getString(R.string.ważne_do), insurance.getDateTo()));
 
-        } else if (object instanceof Service) {
+        } else if (item instanceof Service) {
 
-            Service service = (Service) object;
+            Service service = (Service) item;
 
             holder.docInfo.setText(String.format(context.getString(R.string.numer_rejestracyjny), service.getRegistryNr()));
             holder.docAdditionalInfo.setText(String.format(context.getString(R.string.przebieg), service.getMileage()));
@@ -85,6 +90,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             holder.docDateTo.setText(String.format(context.getString(R.string.ważny_do), service.getDateTo()));
 
         }
+
+        // Apply animation when the  view is bound
+        setAnimation(holder.itemView, position);
     }
 
     @Override
@@ -94,15 +102,40 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         return list.size();
     }
 
+    // Fill adapter with new list
+    public void updateList(List updatedList) {
+        this.list = updatedList;
+        notifyDataSetChanged();
+    }
+
+    private Object getItem(int position) {
+        return list.get(position);
+    }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
+    }
+
+    private void setAnimation(View viewToAnimate, int position) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull RecyclerViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.itemView.clearAnimation();
     }
 
     public interface OnItemClickListener {
         void onItemClick(int position);
     }
 
-    class RecyclerViewHolder extends RecyclerView.ViewHolder {
+    class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView image;
         private TextView
@@ -140,17 +173,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             docDateFrom = itemView.findViewById(R.id.document_date_from);
             docDateTo = itemView.findViewById(R.id.document_date_to);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemClick(position);
-                        }
-                    }
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mListener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    mListener.onItemClick(position);
                 }
-            });
+            }
         }
     }
 }

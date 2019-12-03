@@ -15,11 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
-import patryk.json.MainActivity;
 import patryk.json.R;
+import patryk.json.activity.MainActivity;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
 import patryk.json.api.APIClient;
@@ -65,9 +66,10 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
         if (savedInstanceState != null) {
             parts = (List<Part>) savedInstanceState.getSerializable("parts");
         } else if (getArguments() != null) {
-            int clickedItemPosition = getArguments().getInt("position") + 1;
-            getCarParts(clickedItemPosition);
+            int id = getArguments().getInt("position") + 1;
+            getCarParts(id);
         } else {
+            parts = new ArrayList<>();
             getParts();
         }
 
@@ -116,10 +118,7 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
                 }
 
                 parts = response.body();
-
-                adapter = new RecyclerAdapter(getContext(), parts, R.layout.item_part);
-                adapter.setOnItemClickListener(PartsFragment.this);
-                recyclerView.setAdapter(adapter);
+                adapter.updateList(parts);
 
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
@@ -142,7 +141,7 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
 
         call.enqueue(new Callback<List<Part>>() {
             @Override
-            public void onResponse(Call<List<Part>> call, Response<List<Part>> response) {
+            public void onResponse(@NonNull Call<List<Part>> call, @NonNull Response<List<Part>> response) {
 
                 if (!response.isSuccessful()) {
                     Toasty.error(getContext(), response.code(), Toast.LENGTH_LONG).show();
@@ -150,16 +149,14 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
                 }
 
                 parts = response.body();
-                adapter = new RecyclerAdapter(getContext(), parts, R.layout.item_part);
-                adapter.setOnItemClickListener(PartsFragment.this);
-                recyclerView.setAdapter(adapter);
+                adapter.updateList(parts);
 
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
-            public void onFailure(Call<List<Part>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Part>> call, @NonNull Throwable t) {
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
                 Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();

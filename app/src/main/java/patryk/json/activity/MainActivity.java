@@ -1,4 +1,4 @@
-package patryk.json;
+package patryk.json.activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +24,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
 
+import patryk.json.R;
 import patryk.json.api.API;
 import patryk.json.api.APIClient;
 import patryk.json.fragments.CarsFragment;
@@ -37,24 +39,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private API api;
     public ProgressBar progressBar;
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        progressBar = findViewById(R.id.progressBar);
-
-        DrawerLayout drawer = findViewById(R.id.drawerLayout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(this);
+        initViews();
 
         if (haveNetworkConnection()) {
             APIClient apiClient = new APIClient();
@@ -64,39 +57,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CarsFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CarsFragment(), "CarsFragment").commit();
             navigationView.setCheckedItem(R.id.nav_car_list);
         }
     }
 
+    private void initViews() {
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        progressBar = findViewById(R.id.progressBar);
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        drawer = findViewById(R.id.drawerLayout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+        switch (menuItem.getItemId()) {
+            case R.id.nav_car_list:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CarsFragment(), "CarsFragment").addToBackStack(null).commit();
+                break;
+            case R.id.nav_replacements:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PartsFragment(), "PartsFragment").addToBackStack(null).commit();
+                break;
+            case R.id.nav_documents:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DocumentsFragment(), "DocumentsFragment").addToBackStack(null).commit();
+                break;
+            case R.id.nav_share:
+                shareData();
+                break;
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawerLayout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.nav_car_list) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CarsFragment()).commit();
-        } else if (id == R.id.nav_replacements) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PartsFragment()).addToBackStack(null).commit();
-        } else if (id == R.id.nav_documents) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DocumentsFragment()).addToBackStack(null).commit();
-        } else if (id == R.id.nav_share) {
-            shareData();
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawerLayout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     public void showProgress() {

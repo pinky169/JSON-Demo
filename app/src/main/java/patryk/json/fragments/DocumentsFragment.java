@@ -38,7 +38,6 @@ public class DocumentsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 viewPager.arrowScroll(View.FOCUS_LEFT);
-                // Toast.makeText(getContext(), "PRZEGLĄDY", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -46,7 +45,6 @@ public class DocumentsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 viewPager.arrowScroll(View.FOCUS_RIGHT);
-                // Toast.makeText(getContext(), "UBEZPIECZENIA", Toast.LENGTH_LONG).show();
             }
         });
 

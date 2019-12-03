@@ -15,11 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
-import patryk.json.MainActivity;
 import patryk.json.R;
+import patryk.json.activity.MainActivity;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
 import patryk.json.api.APIClient;
@@ -64,6 +65,7 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
         if (savedInstanceState != null) {
             services = (List<Service>) savedInstanceState.getSerializable("services");
         } else {
+            services = new ArrayList<>();
             getServices();
         }
 
@@ -102,7 +104,7 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
 
         call.enqueue(new Callback<List<Service>>() {
             @Override
-            public void onResponse(Call<List<Service>> call, Response<List<Service>> response) {
+            public void onResponse(@NonNull Call<List<Service>> call, @NonNull Response<List<Service>> response) {
 
                 if (!response.isSuccessful()) {
                     Toasty.error(getContext(), response.code(), Toast.LENGTH_LONG).show();
@@ -110,17 +112,14 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
                 }
 
                 services = response.body();
-
-                adapter = new RecyclerAdapter(getContext(), services, R.layout.item_document);
-                adapter.setOnItemClickListener(ServicesFragment.this);
-                recyclerView.setAdapter(adapter);
+                adapter.updateList(services);
 
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
-            public void onFailure(Call<List<Service>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Service>> call, @NonNull Throwable t) {
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
                 Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();

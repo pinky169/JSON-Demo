@@ -15,11 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
-import patryk.json.MainActivity;
 import patryk.json.R;
+import patryk.json.activity.MainActivity;
 import patryk.json.adapters.RecyclerAdapter;
 import patryk.json.api.API;
 import patryk.json.api.APIClient;
@@ -65,6 +66,7 @@ public class InsuranceFragment extends Fragment implements RecyclerAdapter.OnIte
         if (savedInstanceState != null) {
             insurances = (List<Insurance>) savedInstanceState.getSerializable("insurance");
         } else {
+            insurances = new ArrayList<>();
             getInsurance();
         }
 
@@ -103,7 +105,7 @@ public class InsuranceFragment extends Fragment implements RecyclerAdapter.OnIte
 
         call.enqueue(new Callback<List<Insurance>>() {
             @Override
-            public void onResponse(Call<List<Insurance>> call, Response<List<Insurance>> response) {
+            public void onResponse(@NonNull Call<List<Insurance>> call, @NonNull Response<List<Insurance>> response) {
 
                 if (!response.isSuccessful()) {
                     Toasty.error(getContext(), response.code(), Toast.LENGTH_LONG).show();
@@ -111,17 +113,14 @@ public class InsuranceFragment extends Fragment implements RecyclerAdapter.OnIte
                 }
 
                 insurances = response.body();
-
-                adapter = new RecyclerAdapter(getContext(), insurances, R.layout.item_document);
-                adapter.setOnItemClickListener(InsuranceFragment.this);
-                recyclerView.setAdapter(adapter);
+                adapter.updateList(insurances);
 
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
-            public void onFailure(Call<List<Insurance>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Insurance>> call, @NonNull Throwable t) {
                 activity.hideProgress();
                 swipeRefreshLayout.setRefreshing(false);
                 Toasty.error(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
