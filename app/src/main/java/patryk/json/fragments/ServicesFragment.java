@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +62,7 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
         api = apiClient.getClient();
 
         if (savedInstanceState != null) {
-            services = (List<Service>) savedInstanceState.getSerializable("services");
+            services = savedInstanceState.getParcelableArrayList("services");
         } else {
             services = new ArrayList<>();
             getServices();
@@ -93,7 +92,7 @@ public class ServicesFragment extends Fragment implements RecyclerAdapter.OnItem
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("services", (Serializable) services);
+        outState.putParcelableArrayList("services", (ArrayList) services);
     }
 
     private void getServices() {

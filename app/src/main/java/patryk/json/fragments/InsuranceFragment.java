@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +63,7 @@ public class InsuranceFragment extends Fragment implements RecyclerAdapter.OnIte
         api = apiClient.getClient();
 
         if (savedInstanceState != null) {
-            insurances = (List<Insurance>) savedInstanceState.getSerializable("insurance");
+            insurances = savedInstanceState.getParcelableArrayList("insurance");
         } else {
             insurances = new ArrayList<>();
             getInsurance();
@@ -94,7 +93,7 @@ public class InsuranceFragment extends Fragment implements RecyclerAdapter.OnIte
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("insurance", (Serializable) insurances);
+        outState.putParcelableArrayList("insurance", (ArrayList) insurances);
     }
 
     private void getInsurance() {

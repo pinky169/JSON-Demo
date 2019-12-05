@@ -1,12 +1,24 @@
 package patryk.json.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+public class Car implements Parcelable {
 
-public class Car implements Serializable {
+    public static final Creator<Car> CREATOR = new Creator<Car>() {
+        @Override
+        public Car createFromParcel(Parcel in) {
+            return new Car(in);
+        }
 
+        @Override
+        public Car[] newArray(int size) {
+            return new Car[size];
+        }
+    };
     @SerializedName("id")
     @Expose
     private int id;
@@ -58,6 +70,17 @@ public class Car implements Serializable {
         this.moc = moc;
         this.image = image;
         this.isMainCar = isMainCar;
+    }
+
+    protected Car(Parcel in) {
+        id = in.readInt();
+        marka = in.readString();
+        model = in.readString();
+        rokProdukcji = in.readString();
+        pojemnosc = in.readString();
+        moc = in.readString();
+        image = in.readString();
+        isMainCar = in.readInt();
     }
 
     public int getId() {
@@ -124,4 +147,20 @@ public class Car implements Serializable {
         this.isMainCar = isMainCar;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(marka);
+        dest.writeString(model);
+        dest.writeString(rokProdukcji);
+        dest.writeString(pojemnosc);
+        dest.writeString(moc);
+        dest.writeString(image);
+        dest.writeInt(isMainCar);
+    }
 }

@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +40,7 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     private RecyclerAdapter adapter;
     private MainActivity activity;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
     private List<Car> cars;
     private List<Car> filteredList;
     private API api;
@@ -60,8 +60,8 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
         api = apiClient.getClient();
 
         if (savedInstanceState != null) {
-            cars = (List<Car>) savedInstanceState.getSerializable("cars");
-            filteredList = (List<Car>) savedInstanceState.getSerializable("filteredList");
+            cars = savedInstanceState.getParcelableArrayList("cars");
+            filteredList = savedInstanceState.getParcelableArrayList("filteredList");
         } else {
             cars = new ArrayList<>();
             getCars();
@@ -82,9 +82,10 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
 
         // Number of columns depends on the screen orientation -> dimens.xml
         final int columns = getResources().getInteger(R.integer.recyclerview_columns);
-        RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), columns));
+        recyclerView.getLayoutManager().setMeasurementCacheEnabled(false);
         recyclerView.setAdapter(adapter);
 
         return rootView;
@@ -93,8 +94,8 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("cars", (Serializable) cars);
-        outState.putSerializable("filteredList", (Serializable) filteredList);
+        outState.putParcelableArrayList("cars", (ArrayList) cars);
+        outState.putParcelableArrayList("filteredList", (ArrayList) filteredList);
     }
 
     private void getCars() {
@@ -143,7 +144,7 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
         transaction.add(R.id.fragment_container, partsFragment, "PartsDetailsFragment").commit();
 
         Toasty.custom(getContext(),
-                cars.get(id).getMarka() + " " + cars.get(id).getModel(),
+                "Części auta\n" + cars.get(id).getMarka() + " " + cars.get(id).getModel(),
                 R.drawable.ic_car,
                 R.color.colorAccent,
                 Toast.LENGTH_LONG,

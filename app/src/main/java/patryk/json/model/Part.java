@@ -1,12 +1,24 @@
 package patryk.json.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+public class Part implements Parcelable {
 
-public class Part implements Serializable {
+    public static final Creator<Part> CREATOR = new Creator<Part>() {
+        @Override
+        public Part createFromParcel(Parcel in) {
+            return new Part(in);
+        }
 
+        @Override
+        public Part[] newArray(int size) {
+            return new Part[size];
+        }
+    };
     @SerializedName("carId")
     @Expose
     private int carId;
@@ -48,6 +60,15 @@ public class Part implements Serializable {
         this.additionalInfo = additionalInfo;
         this.date = date;
         this.price = price;
+    }
+
+    protected Part(Parcel in) {
+        carId = in.readInt();
+        partId = in.readInt();
+        partName = in.readString();
+        additionalInfo = in.readString();
+        date = in.readString();
+        price = in.readString();
     }
 
     public int getCarId() {
@@ -98,4 +119,18 @@ public class Part implements Serializable {
         this.price = price;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(carId);
+        dest.writeInt(partId);
+        dest.writeString(partName);
+        dest.writeString(additionalInfo);
+        dest.writeString(date);
+        dest.writeString(price);
+    }
 }

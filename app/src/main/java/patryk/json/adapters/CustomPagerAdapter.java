@@ -17,7 +17,7 @@ public class CustomPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
     private static final int[] TAB_TITLES =
-            new int[]{R.string.insurance, R.string.car_service};
+            new int[]{R.string.insurances, R.string.car_services};
     private final Context mContext;
 
     public CustomPagerAdapter(Context context, FragmentManager fm) {

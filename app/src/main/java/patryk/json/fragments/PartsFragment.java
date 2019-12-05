@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,9 +63,9 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
         api = apiClient.getClient();
 
         if (savedInstanceState != null) {
-            parts = (List<Part>) savedInstanceState.getSerializable("parts");
+            parts = savedInstanceState.getParcelableArrayList("parts");
         } else if (getArguments() != null) {
-            int id = getArguments().getInt("position") + 1;
+            int id = getArguments().getInt(ARG_NUMBER) + 1;
             getCarParts(id);
         } else {
             parts = new ArrayList<>();
@@ -99,7 +98,7 @@ public class PartsFragment extends Fragment implements RecyclerAdapter.OnItemCli
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("parts", (Serializable) parts);
+        outState.putParcelableArrayList("parts", (ArrayList) parts);
     }
 
     private void getParts() {

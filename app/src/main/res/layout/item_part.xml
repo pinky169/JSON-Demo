@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_toEndOf="@+id/part_icon"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
 
             <TextView
                 android:id="@+id/part_name"
@@ -35,15 +36,20 @@
                 android:text="@string/new_part"
                 android:textAllCaps="true"
                 android:textColor="@android:color/black"
-                android:textSize="20sp"
+                android:textSize="21sp"
                 android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/additional_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/additional_info"
-                android:textSize="16sp" />
+                android:text="@string/additional_info" />
 
             <TextView
                 android:id="@+id/part_date"

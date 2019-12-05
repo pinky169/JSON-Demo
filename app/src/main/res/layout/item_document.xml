@@ -24,18 +24,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/document_icon"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
 
+            <TextView
+                android:id="@+id/document_type_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/document_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:textAlignment="viewStart"
-                android:textAllCaps="true"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
+                android:textAlignment="viewStart" />
 
             <TextView
                 android:id="@+id/document_additional_info"
