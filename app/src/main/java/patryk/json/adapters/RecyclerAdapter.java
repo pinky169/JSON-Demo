@@ -30,7 +30,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
     private OnItemClickListener mListener;
     private Context context;
-    private List list;
+    private List<? extends Car> list;
     private int layoutRes;
     private RecyclerView recyclerView;
 
@@ -71,7 +71,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             holder.pojemnosc.setText(car.getPojemnosc());
             holder.moc.setText(car.getMoc());
 
-            Glide.with(context).load(car.getImage()).fitCenter().into(holder.image);
+            Glide.with(context).load(car.getImage()).centerCrop().into(holder.image);
 
             // Expand / collapse cardView on button click with smooth animation
             holder.button.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +139,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
     private Object getItem(int position) {
         return list.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return list.get(position).getId();
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

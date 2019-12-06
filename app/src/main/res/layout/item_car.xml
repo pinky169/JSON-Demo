@@ -7,7 +7,8 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="8dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="2dp"
         app:cardUseCompatPadding="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,14 +18,13 @@
             <ImageView
                 android:id="@+id/car_image"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_height="200dp"
                 android:adjustViewBounds="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <RelativeLayout
                 android:id="@+id/header"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -35,48 +35,45 @@
 
                 <TextView
                     android:id="@+id/car_name"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
                     android:layout_marginStart="10dp"
                     android:text="Marka"
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
                     android:textAllCaps="true"
                     android:textColor="@android:color/white"
                     android:textSize="21sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/header" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/car_model"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/button_expand"
+                    android:layout_toEndOf="@id/car_name"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="Model"
                     android:textAlignment="viewStart"
                     android:textAllCaps="true"
                     android:textColor="@android:color/white"
                     android:textSize="21sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/button_expand"
-                    app:layout_constraintStart_toEndOf="@id/car_name"
-                    app:layout_constraintTop_toTopOf="@id/header" />
+                    android:textStyle="bold" />
 
                 <ImageButton
                     android:id="@+id/button_expand"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:background="@null"
                     android:padding="10dp"
-                    android:src="@drawable/ic_expand_more_white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/header" />
+                    android:src="@drawable/ic_expand_more_white" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </RelativeLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/expandableLayout"

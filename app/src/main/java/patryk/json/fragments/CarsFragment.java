@@ -40,7 +40,6 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
     private RecyclerAdapter adapter;
     private MainActivity activity;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
     private List<Car> cars;
     private List<Car> filteredList;
     private API api;
@@ -68,6 +67,7 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
         }
 
         adapter = new RecyclerAdapter(getContext(), cars, R.layout.item_car);
+        adapter.setHasStableIds(true);
         adapter.setOnItemClickListener(CarsFragment.this);
     }
 
@@ -82,7 +82,7 @@ public class CarsFragment extends Fragment implements RecyclerAdapter.OnItemClic
 
         // Number of columns depends on the screen orientation -> dimens.xml
         final int columns = getResources().getInteger(R.integer.recyclerview_columns);
-        recyclerView = rootView.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), columns));
         recyclerView.getLayoutManager().setMeasurementCacheEnabled(false);
